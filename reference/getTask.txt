@@ -1,0 +1,15 @@
+query getTask {
+  getTask(
+    id: 1
+    assertions: {
+      modifiedBefore: "2021-12-06T21:31:14.178766+00:00"
+  }) {
+    task {
+      lineNumber
+      fullText
+    }
+    modifiedAt
+    success
+    errors
+  }
+}

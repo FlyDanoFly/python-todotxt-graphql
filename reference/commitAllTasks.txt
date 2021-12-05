@@ -1,0 +1,19 @@
+mutation CommitAllTasks {
+  commitAllTasks(
+    lines: [
+      "Here is a task",
+      "here is a task 2"]
+    assertions: {
+      modifiedBefore: "2021-12-06T10:15:30Z"
+    }
+  ) {
+    tasks {
+      lineNumber,
+      fullText
+    }
+    modifiedAt
+    success
+    errors
+  }
+}
+
