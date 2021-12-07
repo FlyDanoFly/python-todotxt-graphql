@@ -4,6 +4,7 @@ import shutil
 from ariadne import convert_kwargs_to_snake_case
 from pytodotxt import TodoTxt, Task
 
+from exceptions import TodoTxtBaseError
 from utils import get_todotxt_path_with_assertions, task_to_dict
 
 
@@ -30,13 +31,16 @@ def commit_all_tasks_resolver(obj, info, lines, assertions):
             "success": True,
             "tasks": return_tasks
         }
-    except ValueError:  # date format errors
+    except TodoTxtBaseError as error:  # date format errors
         payload = {
             "success": False,
-            "errors": [f"Incorrect date format provided. Date should be in "
-                       f"the format dd-mm-yyyy"]
+            "errors": [str(error)]
         }
     return payload
+
+#
+# Everything following is really old and not tested, I really should delete them
+#
 
 @convert_kwargs_to_snake_case
 def create_task_resolver(obj, info, title, description):
@@ -71,6 +75,7 @@ def create_task_resolver(obj, info, title, description):
         }
     return payload
 
+
 @convert_kwargs_to_snake_case
 def update_task_resolver(obj, info, id, title, description):
     try:
@@ -104,6 +109,7 @@ def update_task_resolver(obj, info, id, title, description):
             "errors": ["item matching id {id} not found"]
         }
     return payload
+
 
 @convert_kwargs_to_snake_case
 def delete_task_resolver(obj, info, id):

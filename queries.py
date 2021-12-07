@@ -1,16 +1,11 @@
 from datetime import datetime, timezone
-from pprint import pprint
 
 from ariadne import convert_kwargs_to_snake_case
-
 from pytodotxt import TodoTxt
 
-from utils import (
-    get_todotxt_modified_at,
-    get_todotxt_path_with_assertions,
-    task_to_dict
-)
-
+from exceptions import TodoTxtBaseError
+from utils import (get_todotxt_modified_at, get_todotxt_path_with_assertions,
+                   task_to_dict)
 
 # TODO:
 # Handle only returning some of the requested inputs
@@ -40,9 +35,8 @@ def get_modified_at_resolver(obj, info):
 @convert_kwargs_to_snake_case
 def listTasks_resolver(obj, info, assertions):
     try:
-        print('T'*80)
         user_data = info.context['user_data']
-        todotxt_path = get_todotxt_path_with_assertions(user_data, assertions)
+        todotxt_path = get_todotxt_path_with_assertions(user_data, assertions, require_modified_at=False)
 
         todotxt = TodoTxt(todotxt_path)
         todotxt.parse()
@@ -65,7 +59,7 @@ def listTasks_resolver(obj, info, assertions):
 def getTask_resolver(obj, info, id, assertions):
     try:
         user_data = info.context['user_data']
-        todotxt_path = get_todotxt_path_with_assertions(user_data, assertions)
+        todotxt_path = get_todotxt_path_with_assertions(user_data, assertions, require_modified_at=False)
 
         todotxt = TodoTxt(todotxt_path)
         todotxt.parse()
@@ -78,9 +72,9 @@ def getTask_resolver(obj, info, id, assertions):
             "modified_at": datetime.fromtimestamp(todotxt_path.stat().st_mtime, timezone.utc),
             "task": task
         }
-    except AttributeError:  # todo not found
+    except TodoTxtBaseError as error:  # todo not found
         payload = {
             "success": False,
-            "errors": ["Task item matching {id} not found"]
+            "errors": [str(error)]
         }
     return payload

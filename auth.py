@@ -45,6 +45,9 @@ def authenticate_and_get_context(environ):
 
     authentication_parts = environ[AUTHENTICATION_HEADER].split()
 
+    if len(authentication_parts) < 2:
+        raise HttpBadRequestError()
+
     if authentication_parts[0].lower() != AUTHENTICATION_SCHEME.lower():
         raise HttpBadRequestError()
 

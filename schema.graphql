@@ -10,7 +10,11 @@ type Task {
     fullText: String!
 }
 
-input Assertionific {
+input OptionalAssertion {
+    modifiedBefore: Datetime
+}
+
+input RequiredAssertion {
     modifiedBefore: Datetime!
 }
 
@@ -36,12 +40,12 @@ type TasksResult {
 
 type Query {
     getModifiedAt: ModifiedAtResult!
-    listTasks(assertions: Assertionific): TasksResult!
-    getTask(id: ID!, assertions: Assertionific): TaskResult!
+    listTasks(assertions: OptionalAssertion): TasksResult!
+    getTask(id: ID!, assertions: OptionalAssertion): TaskResult!
 }
 
 type Mutation {
-    commitAllTasks(lines: [String]!, assertions: Assertionific): TasksResult!
+    commitAllTasks(lines: [String]!, assertions: RequiredAssertion): TasksResult!
     createTask(title: String!, description: String!, created_at: String): TaskResult!
     updateTask(id: ID!, title: String, description: String): TaskResult!
     deleteTask(id: ID): TaskResult!
